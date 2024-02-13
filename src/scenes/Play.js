@@ -11,16 +11,22 @@ class Play extends Phaser.Scene {
         this.load.image('rock', './assets/rock.png');
         this.load.image('gear', './assets/gear.png');
         this.load.image('energycell', './assets/energycell.png');
-        this.load.image('crosshair','./assets/crosshair.png');
+        this.load.image('reticle','./assets/reticle.png');
 
         //load animations
-        this.load.image('chargedcell', './assets/chargedenergycell.png');
+        this.load.image('gunShotAnim', './assets/playerShootAnim.png', {
+            frameWidth: 64,
+            frameHeight: 32,
+            startFrame: 0,
+            endFrame: 0
+        });
+        this.load.image('chargedcell', './assets/TargetBreakAnim.png');
         this.load.atlas('playerS', './assets/spritesheet.png', './assets/sprites.json');
 
         //load audio
-        this.load.audio("sfx_select", "./assets/menuSelect.wav");
+        //this.load.audio("sfx_select", "./assets/blip_select12.wav");
         this.load.audio("GearPickUp", "./assets/GearPickUp.wav");
-        this.load.audio("ObsHit", "./assets/ObsHit.wav");
+        this.load.audio("Crash", "./assets/Crash.wav");
         this.load.audio("Charge", "./assets/Charge.wav");
         this.load.audio("CellCharge", "./assets/CellCharge.wav");
         this.load.audio("music", "./assets/BackgroundMusic.wav");
@@ -34,6 +40,7 @@ class Play extends Phaser.Scene {
         this.mouseDown = false;
 
 
+
         //place backgrounds
         this.skyBG = this.add.tileSprite(0, 0, 640, 480, 'skyBG').setOrigin(0, 0);
         this.sand = this.add.tileSprite(0, 10, game.config.width, game.config.height, 'sandGround').setOrigin(0, 0).setScale(1, 4);
@@ -44,9 +51,14 @@ class Play extends Phaser.Scene {
         this.music.volume = .7;
         this.music.play();
 
-        //decraese target hit volume
-        this.targetHit = this.sound.add("CellCharge");
-        this.targetHit.volume = .1;
+        //decraese cell hit volume
+        this.cellHit = this.sound.add("CellCharge");
+        this.cellHit.volume = .1;
+
+        this.Charge = this.sound.add("Charge");
+        this.Charge.volume = .2;
+
+        
 
         //keys for movement
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
@@ -56,24 +68,24 @@ class Play extends Phaser.Scene {
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         //place assets into the scene
-        this.obs1 = new Obstacle(this, 0, 0, 'rock').setOrigin(0, 0);
-        this.obs1.reset();
-        this.obs2 = new Obstacle(this, 0, 0, 'rock').setOrigin(0, 0);
-        this.obs2.reset();
-        this.obs2.x += 45 + Math.round(Math.random() * 25);
-        this.obs3 = new Obstacle(this, 0, 0, 'rock').setOrigin(0, 0);
-        this.obs3.reset();
-        this.obs2.x += 120 + Math.round(Math.random() * 45);
+        this.rock1 = new Rock(this, 0, 0, 'rock').setOrigin(0, 0);
+        this.rock1.reset();
+        this.rock2 = new Rock(this, 0, 0, 'rock').setOrigin(0, 0);
+        this.rock2.reset();
+        this.rock2.x += 45 + Math.round(Math.random() * 25);
+        this.rock3 = new Rock(this, 0, 0, 'rock').setOrigin(0, 0);
+        this.rock3.reset();
+        this.rock2.x += 120 + Math.round(Math.random() * 45);
         this.gear1 = new Gear(this, 0, 0, 'gear').setOrigin(0, 0);
         this.gear1.reset();
         this.gear2 = new Gear(this, 0, 0, 'gear').setOrigin(0, 0);
         this.gear2.reset();
         this.gear2.x += 90 + Math.round(Math.random() * 100);
 
-        this.tar1 = new Target(this, 0, 0, 'energycell', 0, 1).setOrigin(0, 0);
+        this.tar1 = new Cell(this, 0, 0, 'energycell', 0, 1).setOrigin(0, 0);
         this.tar1.reset();
 
-        this.tar2 = new Target(this, 0, 0, 'energycell', 0, 0).setOrigin(0, 0);
+        this.tar2 = new Cell(this, 0, 0, 'energycell', 0, 0).setOrigin(0, 0);
         this.tar2.reset();
         //player object
 
@@ -98,6 +110,7 @@ class Play extends Phaser.Scene {
         });
 
         //add top-border for UI
+        //this.add.rectangle(0,0,640,110,0x151565).setOrigin(0,0);
         this.scoreConfig = {
             fontFamily: "Courier",
             fontSize: "28px",
@@ -134,12 +147,9 @@ class Play extends Phaser.Scene {
         this.hScoreLabel = this.add.text(69, 94,"H SCORE",this.labelConfig);
         this.hScore = this.add.text(69,114,highscore,this.scoreConfig);
 
-        //UI controls
-        this.add.text(game.config.width / 3, 24, "(↑)/(W) & (↓)/(S) to move", this.labelConfig);
-        this.add.text(game.config.width / 3 - 34, 54, "(Spacebar) to charge the energy cell", this.labelConfig);
 
-        //aiming crosshair
-        this.add.sprite(11*game.config.width/16,200,'crosshair').setScale(2,2);
+        //aiming reticle
+        this.add.sprite(11*game.config.width/16,200,'reticle').setScale(2,2);
 
         //fading controls
         this.upperControl = this.add.text(50, 4 * game.config.height / 7, "(↑)/(W)", this.labelConfig);
@@ -203,28 +213,29 @@ class Play extends Phaser.Scene {
 
             //scroll tiled backgrounds proportional to speed of game
             this.skyBG.tilePositionX += game.settings.scrollSpeed / 4;
-            //this.mountainBG.tilePositionX += game.settings.scrollSpeed / 2;
-            //this.treeBG.tilePositionX += game.settings.scrollSpeed;
             this.sand.tilePositionX += game.settings.scrollSpeed;
             this.sandstorm.tilePositionX += 2 * game.settings.scrollSpeed;
 
             let gunShot = this.add.sprite(this.p1.x, this.p1.y - 15, "gunShotAnim").setOrigin(0, 0);
-            gunShot.alpha = 0;a
+            gunShot.alpha = 0;
             this.p1.update();
             gunShot.y = this.p1.y - 15;
 
-            this.obs1.update();
-            this.obs2.update();
-            this.obs3.update();
+            this.rock1.update();
+            this.rock2.update();
+            this.rock3.update();
             this.gear1.update();
             this.gear2.update();
             this.tar1.update();
             this.tar2.update();
 
             if (Phaser.Input.Keyboard.JustDown(keySpace) && this.p1.moveable) {
+                this.p1.play('shoot').once('animationcomplete', () => {
+                   this.p1.play('idle');
+                });
 
                 this.p1.moveable = false;
-                this.sound.play("Charge");
+                this.Charge.play();
                 if (game.settings.scrollSpeed <= 0) {
                     game.settings.scrollSpeed = 0;
                 }
@@ -238,11 +249,11 @@ class Play extends Phaser.Scene {
                     callbackScope: this
                 });
                 if (this.tar1.x < game.config.width / 2 + game.config.width / 4.5 && this.tar1.x > game.config.width / 2 + game.config.width / 7) {
-                    let t1Break = this.add.sprite(this.tar1.x - 5, this.tar1.y - 10, "chargedcell").setOrigin(0, 0);
+                    let t1Break = this.add.sprite(this.tar1.x - 5, this.tar1.y - 10,"chargedcell").setOrigin(0, 0);
                     setTimeout(function () {
                         spriteDestroy(t1Break)
                     }, 200);
-                    this.targetHit.play();
+                    this.cellHit.play();
                     this.timer.delay += 2500;
                     this.totalTime += 3;
                     this.tar1.reset();
@@ -256,7 +267,7 @@ class Play extends Phaser.Scene {
                     setTimeout(function () {
                         spriteDestroy(t2Break)
                     }, 200);
-                    this.targetHit.play();
+                    this.cellHit.play();
                     this.timer.delay += 2500;
                     this.totalTime += 3;
                     this.tar2.reset();
@@ -269,69 +280,76 @@ class Play extends Phaser.Scene {
             //update timer
             this.timeLeft.text = Math.round(this.totalTime - this.timer.getElapsedSeconds());
 
-            //make sure obs and gears are not overlapping
-            if (this.checkOverlap(this.obs1, this.obs2)) {
-                this.obs1.reset();
+            //make sure rocks and gears are not overlapping
+            if (this.checkOverlap(this.rock1, this.rock2)) {
+                this.rock1.reset();
             }
-            if (this.checkOverlap(this.obs1, this.obs3)) {
-                this.obs1.reset();
+            if (this.checkOverlap(this.rock1, this.rock3)) {
+                this.rock1.reset();
             }
-            if (this.checkOverlap(this.obs1, this.gear1)) {
-                this.obs1.reset();
+            if (this.checkOverlap(this.rock1, this.gear1)) {
+                this.rock1.reset();
             }
-            if (this.checkOverlap(this.obs1, this.gear2)) {
-                this.obs1.reset();
+            if (this.checkOverlap(this.rock1, this.gear2)) {
+                this.rock1.reset();
             }
-            if (this.checkOverlap(this.obs2, this.obs3)) {
-                this.obs2.reset();
+            if (this.checkOverlap(this.rock2, this.rock3)) {
+                this.rock2.reset();
             }
-            if (this.checkOverlap(this.obs2, this.gear1)) {
-                this.obs2.reset();
+            if (this.checkOverlap(this.rock2, this.gear1)) {
+                this.rock2.reset();
             }
-            if (this.checkOverlap(this.obs2, this.gear2)) {
-                this.obs2.reset();
+            if (this.checkOverlap(this.rock2, this.gear2)) {
+                this.rock2.reset();
             }
-            if (this.checkOverlap(this.obs3, this.gear1)) {
-                this.obs3.reset();
+            if (this.checkOverlap(this.rock3, this.gear1)) {
+                this.rock3.reset();
             }
-            if (this.checkOverlap(this.obs3, this.gear2)) {
-                this.obs3.reset();
+            if (this.checkOverlap(this.rock3, this.gear2)) {
+                this.rock3.reset();
             }
             if (this.checkOverlap(this.gear1, this.gear2)) {
                 this.gear1.reset();
             }
 
             //check collisions against player
-            if (this.checkCollision(this.p1, this.obs1)) {
-                this.sound.play("ObsHit");
+            if (this.checkCollision(this.p1, this.rock1)) {
+                this.sound.play("Crash");
+                //stumble animation
+                this.p1.play('stumble').once('animationcomplete', () =>{
+                  this.p1.play('idle')
+                });
                 this.timer.delay -= 5000;
                 this.totalTime -= 5;
-                this.obs1.enabled = false;
-                //console.log("hit obs1");
+                this.rock1.enabled = false;
                 game.settings.scrollSpeed -= 1.5;
                 if (game.settings.scrollSpeed < 0) {
                     game.settings.scrollSpeed = 0;
                 }
             }
-            if (this.checkCollision(this.p1, this.obs2)) {
-                this.sound.play("ObsHit");
-                
+            if (this.checkCollision(this.p1, this.rock2)) {
+                this.sound.play("Crash");
+                //stumble animation
+                this.p1.play('stumble').once('animationcomplete', () =>{
+                    this.p1.play('idle')
+                });
                 this.timer.delay -= 5000;
                 this.totalTime -= 5;
-                this.obs2.enabled = false;
-                //console.log("hit obs2");
+                this.rock2.enabled = false;
                 game.settings.scrollSpeed -= 1.5;
                 if (game.settings.scrollSpeed < 0) {
                     game.settings.scrollSpeed = 0;
                 }
             }
-            if (this.checkCollision(this.p1, this.obs3)) {
-                this.sound.play("ObsHit");
-
+            if (this.checkCollision(this.p1, this.rock3)) {
+                this.sound.play("Crash");
+                //stumble animation
+                this.p1.play('stumble').once('animationcomplete', () =>{
+                    this.p1.play('idle')
+                });
                 this.timer.delay -= 5000;
                 this.totalTime -= 5;
-                this.obs3.enabled = false;
-                //console.log("hit obs3");
+                this.rock3.enabled = false;
                 game.settings.scrollSpeed -= 2;
                 if (game.settings.scrollSpeed < 0) {
                     game.settings.scrollSpeed = 0;

@@ -1,6 +1,6 @@
 /*
 Jason Torres
-
+Scavenger Run
 */
 
 let config = {
@@ -21,3 +21,4 @@ game.settings = {
 let keyUP, keyDOWN, keyW, keyS, keySpace;
 let mouseDown = false;
 let highscore = 0;
+//need left mouse click

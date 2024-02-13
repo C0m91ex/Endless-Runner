@@ -28,9 +28,9 @@ class Menu extends Phaser.Scene {
 
         // (↑) & (↓)
         menuConfig.fontSize = "48px";
-        this.add.text(centerX, centerY - (2.5*textSpacer), "Scavanger Run", menuConfig).setOrigin(.5);
+        this.add.text(centerX, centerY - (2.5*textSpacer), "Scavenger Run", menuConfig).setOrigin(.5);
         menuConfig.fontSize = "32px";
-        this.playText = this.add.text(centerX, centerY + textSpacer, "Click here or press (↑) \nto start Scavanger Run.", menuConfig).setOrigin(.5).setInteractive();
+        this.playText = this.add.text(centerX, centerY + textSpacer, "Click here or press (↑) \nto start Scavenger Run.", menuConfig).setOrigin(.5).setInteractive();
         this.instructionsText = this.add.text(centerX, centerY + (2.5*textSpacer), "Click here or press (↓) \nfor gameplay instructions.", menuConfig).setOrigin(.5).setInteractive();
 
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);

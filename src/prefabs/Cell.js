@@ -1,4 +1,4 @@
-class EnergyCell extends Phaser.GameObjects.Sprite {
+class Cell extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, texture, frame, type) {
         super(scene, x, y, texture, frame, type);
         scene.add.existing(this);
