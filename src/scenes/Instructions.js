@@ -5,7 +5,7 @@ class Instructions extends Phaser.Scene {
 
     preload() {
         this.load.image('player','./assets/player.png');
-        this.load.image('obstacle','./assets/rock.png');
+        this.load.image('rock','./assets/rock.png');
         this.load.image('gear','./assets/gear.png');
         this.load.image('energycell','./assets/energycell.png');
 
@@ -31,10 +31,10 @@ class Instructions extends Phaser.Scene {
         let textSpacer = 64;
 
         //(↑) & (↓)
-        this.add.text(centerX, centerY + (2.75*textSpacer), "Use (↑) & (↓) arrows or (W) & (S) keys\nto move.", menuConfig).setOrigin(.5);
-        this.add.text(centerX, centerY + (.25*textSpacer), "Pass through gears to earn points.", menuConfig).setOrigin(.5);
-        this.add.text(centerX, centerY - (.75*textSpacer), "Press (Space) when targets are in the reticle to gain time.", menuConfig).setOrigin(.5);
-        this.add.text(centerX, centerY - (1.75*textSpacer), "Dodge obstacles to avoid losing time.", menuConfig).setOrigin(.5);
+        this.add.text(centerX, centerY + (2.75*textSpacer), "Use (↑) & (↓) arrows or (W) & (S) keys to move.", menuConfig).setOrigin(.5);
+        this.add.text(centerX, centerY + (.25*textSpacer), "Collect gears to earn points.", menuConfig).setOrigin(.5);
+        this.add.text(centerX, centerY - (.75*textSpacer), "Press (Space) when the charger is \n over the energy cell to gain fuel", menuConfig).setOrigin(.5);
+        this.add.text(centerX, centerY - (1.75*textSpacer), "Dodge rocks to avoid losing energy fuel.", menuConfig).setOrigin(.5);
         menuConfig.fontSize = "32px";
         this.backText = this.add.text(centerX, centerY - (3*textSpacer), "Click here or press (↓)\nto go back to the menu.", menuConfig).setOrigin(.5).setInteractive();
 
@@ -43,21 +43,21 @@ class Instructions extends Phaser.Scene {
 
         menuConfig.fontSize = "12px";
 
-        this.p1 = this.add.sprite(game.config.width/5,3*game.config.height/5 + 35,"player");
+        this.player1 = this.add.sprite(game.config.width/5,3*game.config.height/5 + 35,"player");
         this.add.text(game.config.width/5,3*game.config.height/5+85,'Player',menuConfig).setOrigin(.5);
-        this.p1.setScale(2, 2);
+        this.player1.setScale(2, 2);
 
-        this.obs = this.add.sprite(2*game.config.width/5,3*game.config.height/5 + 35,"obstacle");
-        this.add.text(2*game.config.width/5,3*game.config.height/5+85,'Obstacle',menuConfig).setOrigin(.5);
-        this.obs.setScale(2, 2);
+        this.rock = this.add.sprite(2*game.config.width/5,3*game.config.height/5 + 35,"rock");
+        this.add.text(2*game.config.width/5,3*game.config.height/5+85,'Rock',menuConfig).setOrigin(.5);
+        this.rock.setScale(2, 2);
 
-        this.add.text(3*game.config.width/5,3*game.config.height/5+85,'gear',menuConfig).setOrigin(.5);
-        this.energycell = this.add.sprite(3*game.config.width/5,3*game.config.height/5 + 35,"Gear");
-        this.energycell.setScale(2, 2);
+        this.gear = this.add.sprite(3*game.config.width/5,3*game.config.height/5 + 35,"gear");
+        this.add.text(3*game.config.width/5,3*game.config.height/5+85,'Gear',menuConfig).setOrigin(.5);
+        this.gear.setScale(2, 2);
 
-        this.tar = this.add.sprite(4*game.config.width/5,3*game.config.height/5 + 35,"energycell");
+        this.energycell = this.add.sprite(4*game.config.width/5,3*game.config.height/5 + 35,"energycell");
         this.add.text(4*game.config.width/5,3*game.config.height/5+85,'EnergyCell',menuConfig).setOrigin(.5);
-        this.tar.setScale(2, 2);
+        this.energycell.setScale(2, 2);
 
         this.singleClick = 0;
     }
