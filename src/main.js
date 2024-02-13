@@ -1,6 +1,13 @@
 /*
 Jason Torres
 Scavenger Run
+Approximately 23 Hours
+
+Creative tilt:
+I really liked coding the radomly generated obstacles and pickups that I used in my game. I had to make sure that they 
+weren't overlapping and made sure to have the impact between the player model and the object. I also really like the art 
+that I had done for this project, I have always loved the sci-fi style and just seeing it implemented into my game was 
+so amazing. 
 */
 
 let config = {
