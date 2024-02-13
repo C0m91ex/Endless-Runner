@@ -20,7 +20,7 @@ class Play extends Phaser.Scene {
             startFrame: 0,
             endFrame: 0
         });
-        this.load.image('chargedcell', './assets/TargetBreakAnim.png');
+        this.load.image('chargedcell', './assets/ChargedCell.png');
         this.load.atlas('playerS', './assets/spritesheet.png', './assets/sprites.json');
 
         //load audio
