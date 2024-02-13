@@ -24,7 +24,7 @@ class Play extends Phaser.Scene {
         this.load.atlas('playerS', './assets/spritesheet.png', './assets/sprites.json');
 
         //load audio
-        //this.load.audio("sfx_select", "./assets/blip_select12.wav");
+        this.load.audio("sfx_select", "./assets/menuSelect.wav");
         this.load.audio("GearPickUp", "./assets/GearPickUp.wav");
         this.load.audio("Crash", "./assets/Crash.wav");
         this.load.audio("Charge", "./assets/Charge.wav");
@@ -45,13 +45,13 @@ class Play extends Phaser.Scene {
         this.skyBG = this.add.tileSprite(0, 0, 640, 480, 'skyBG').setOrigin(0, 0);
         this.sand = this.add.tileSprite(0, 10, game.config.width, game.config.height, 'sandGround').setOrigin(0, 0).setScale(1, 4);
 
-        //start up looping background music
+        //start up looping background sound
         this.music = this.sound.add("music");
         this.music.loop = true;
         this.music.volume = .3;
         this.music.play();
 
-        //decraese cell hit volume
+        //decraese cell hit sound effects
         this.cellHit = this.sound.add("CellCharge");
         this.cellHit.volume = .1;
 
@@ -87,9 +87,8 @@ class Play extends Phaser.Scene {
 
         this.tar2 = new Cell(this, 0, 0, 'energycell', 0, 0).setOrigin(0, 0);
         this.tar2.reset();
+
         //player object
-
-
         this.p1 = new Player(this, 40, 2 * game.config.height / 3, 'player').setOrigin(0, 0).play('idle');
 
         this.sandstorm = this.add.tileSprite(0, -game.config.height, game.config.width, game.config.height, 'sandGround').setOrigin(0, 0).setScale(1, 8);
@@ -109,8 +108,7 @@ class Play extends Phaser.Scene {
             callbackScope: this
         });
 
-        //add top-border for UI
-        //this.add.rectangle(0,0,640,110,0x151565).setOrigin(0,0);
+
         this.scoreConfig = {
             fontFamily: "Courier",
             fontSize: "28px",
@@ -315,7 +313,7 @@ class Play extends Phaser.Scene {
             //check collisions against player
             if (this.checkCollision(this.p1, this.rock1)) {
                 this.sound.play("Crash");
-                //stumble animation
+
                 this.p1.play('stumble').once('animationcomplete', () =>{
                   this.p1.play('idle')
                 });
@@ -329,7 +327,7 @@ class Play extends Phaser.Scene {
             }
             if (this.checkCollision(this.p1, this.rock2)) {
                 this.sound.play("Crash");
-                //stumble animation
+
                 this.p1.play('stumble').once('animationcomplete', () =>{
                     this.p1.play('idle')
                 });
@@ -343,7 +341,7 @@ class Play extends Phaser.Scene {
             }
             if (this.checkCollision(this.p1, this.rock3)) {
                 this.sound.play("Crash");
-                //stumble animation
+
                 this.p1.play('stumble').once('animationcomplete', () =>{
                     this.p1.play('idle')
                 });
