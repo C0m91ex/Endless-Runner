@@ -48,7 +48,7 @@ class Play extends Phaser.Scene {
         //start up looping background music
         this.music = this.sound.add("music");
         this.music.loop = true;
-        this.music.volume = .7;
+        this.music.volume = .3;
         this.music.play();
 
         //decraese cell hit volume
@@ -138,13 +138,13 @@ class Play extends Phaser.Scene {
         this.p1Score = 0;
 
         //UI labels and timers
-        this.timeLeftLable = this.add.text(game.config.width - 160, 24, "TIME LEFT", this.labelConfig);
+        this.timeLeftLable = this.add.text(game.config.width - 160, 24, "FUEL LEFT", this.labelConfig);
         this.timeLeft = this.add.text(game.config.width - 160, 54, this.timer.delay, this.scoreConfig);
 
         this.scoreLabel = this.add.text(69, 24, "SCORE", this.labelConfig);
         this.scoreLeft = this.add.text(69, 54, this.p1Score, this.scoreConfig);
 
-        this.hScoreLabel = this.add.text(69, 94,"H SCORE",this.labelConfig);
+        this.hScoreLabel = this.add.text(69, 94,"HI SCORE",this.labelConfig);
         this.hScore = this.add.text(69,114,highscore,this.scoreConfig);
 
 
