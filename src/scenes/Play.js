@@ -6,8 +6,6 @@ class Play extends Phaser.Scene {
     preload() {
         //load images
         this.load.image('skyBG', './assets/SkyBackground.png');
-        this.load.image('treeBG', './assets/treeBackgrounLayer.png');
-        this.load.image('mountainBG', './assets/mountainBackgrounLayer.png');
         this.load.image('sandGround', './assets/sandLayer.png');
         this.load.image('player', './assets/player.png');
         this.load.image('rock', './assets/rock.png');
@@ -16,23 +14,17 @@ class Play extends Phaser.Scene {
         this.load.image('crosshair','./assets/crosshair.png');
 
         //load animations
-        this.load.image('gunShotAnim', './assets/playerShootAnim.png', {
-            frameWidth: 64,
-            frameHeight: 32,
-            startFrame: 0,
-            endFrame: 0
-        });
         this.load.image('chargedcell', './assets/chargedenergycell.png');
         this.load.atlas('playerS', './assets/spritesheet.png', './assets/sprites.json');
 
         //load audio
-        //this.load.audio("sfx_select", "./assets/blip_select12.wav");
-        //this.load.audio("GatePass", "./assets/GatePass.wav");
-        //this.load.audio("ObsHit", "./assets/ObsHit.wav");
-        //this.load.audio("ShotFired", "./assets/ShotFired.wav");
-        //this.load.audio("TargetBreak", "./assets/TargetBreak.wav");
-        //this.load.audio("music", "./assets/BackgroundMusic.wav");
-        //this.load.audio("GameOver", "./assets/GameOver.wav");
+        this.load.audio("sfx_select", "./assets/menuSelect.wav");
+        this.load.audio("GearPickUp", "./assets/GearPickUp.wav");
+        this.load.audio("ObsHit", "./assets/ObsHit.wav");
+        this.load.audio("Charge", "./assets/Charge.wav");
+        this.load.audio("CellCharge", "./assets/CellCharge.wav");
+        this.load.audio("music", "./assets/BackgroundMusic.wav");
+        this.load.audio("GameOver", "./assets/GameOver.wav");
     }
 
     create() {
@@ -43,11 +35,8 @@ class Play extends Phaser.Scene {
 
 
         //place backgrounds
-        //this.starfield = this.add.tileSprite(0,0,640,480,"starfield").setOrigin(0,0);
         this.skyBG = this.add.tileSprite(0, 0, 640, 480, 'skyBG').setOrigin(0, 0);
-        //this.mountainBG = this.add.tileSprite(0, 0, game.config.width, game.config.height / 2, 'mountainBG').setOrigin(0, 0);
         this.sand = this.add.tileSprite(0, 10, game.config.width, game.config.height, 'sandGround').setOrigin(0, 0).setScale(1, 4);
-        //this.treeBG = this.add.tileSprite(0, 0, game.config.width, game.config.height / 2 + 50, 'treeBG').setOrigin(0, 0);
 
         //start up looping background music
         this.music = this.sound.add("music");
@@ -56,7 +45,7 @@ class Play extends Phaser.Scene {
         this.music.play();
 
         //decraese target hit volume
-        this.targetHit = this.sound.add("TargetBreak");
+        this.targetHit = this.sound.add("CellCharge");
         this.targetHit.volume = .1;
 
         //keys for movement
@@ -171,7 +160,7 @@ class Play extends Phaser.Scene {
                 this.add.text(game.config.width/2,7*game.config.height/8,'New High Score!',this.scoreConfig).setOrigin(.5);
             }
             if (Phaser.Input.Keyboard.JustDown(keyUP)) {
-                //this.sound.play("menuSelect");
+                this.sound.play("menuSelect");
                 this.time.addEvent({
                     delay: 1300,
                     callback: () => {
@@ -181,8 +170,8 @@ class Play extends Phaser.Scene {
                     callbackScope: this
                 });
             } else if (Phaser.Input.Keyboard.JustDown(keyDOWN)) {
-                //this.sound.play("menuSelect");
-                //this.sound.play("menuSelect");
+                this.sound.play("menuSelect");
+                this.sound.play("menuSelect");
                 this.time.addEvent({
                     delay: 1300,
                     callback: () => {
@@ -235,7 +224,7 @@ class Play extends Phaser.Scene {
             if (Phaser.Input.Keyboard.JustDown(keySpace) && this.p1.moveable) {
 
                 this.p1.moveable = false;
-                //this.sound.play("ShotFired");
+                this.sound.play("Charge");
                 if (game.settings.scrollSpeed <= 0) {
                     game.settings.scrollSpeed = 0;
                 }
@@ -314,7 +303,7 @@ class Play extends Phaser.Scene {
 
             //check collisions against player
             if (this.checkCollision(this.p1, this.obs1)) {
-                //this.sound.play("ObsHit");
+                this.sound.play("ObsHit");
                 this.timer.delay -= 5000;
                 this.totalTime -= 5;
                 this.obs1.enabled = false;
@@ -325,7 +314,7 @@ class Play extends Phaser.Scene {
                 }
             }
             if (this.checkCollision(this.p1, this.obs2)) {
-                //this.sound.play("ObsHit");
+                this.sound.play("ObsHit");
                 
                 this.timer.delay -= 5000;
                 this.totalTime -= 5;
@@ -337,7 +326,7 @@ class Play extends Phaser.Scene {
                 }
             }
             if (this.checkCollision(this.p1, this.obs3)) {
-                //this.sound.play("ObsHit");
+                this.sound.play("ObsHit");
 
                 this.timer.delay -= 5000;
                 this.totalTime -= 5;
@@ -349,14 +338,14 @@ class Play extends Phaser.Scene {
                 }
             }
             if (this.checkCollision(this.p1, this.gear1)) {
-                //this.sound.play("GatePass");
+                this.sound.play("GearPickUp");
                 this.p1Score += 10;
                 this.gear1.enabled = false;
                 this.scoreLeft.text = this.p1Score;
 
             }
             if (this.checkCollision(this.p1, this.gear2)) {
-                //this.sound.play("GatePass");
+                this.sound.play("GearPickUp");
                 this.p1Score += 10;
                 this.gear2.enabled = false;
                 this.scoreLeft.text = this.p1Score;
@@ -383,7 +372,7 @@ class Play extends Phaser.Scene {
     delayGameOver() {
         game.settings.scrollSpeed = 0;
         this.music.pause();
-        //this.sound.play("GameOver");
+        this.sound.play("GameOver");
         this.gameOver = true;
         this.delayGO = this.time.addEvent({
             delay: 1200,
